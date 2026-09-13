@@ -1,0 +1,406 @@
+<title>株ノート</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@500;700&family=Noto+Sans+JP:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --bg:#F6F5F0; --surface:#FFFFFF; --ink:#23272E; --muted:#6A7280;
+    --accent:#2E5A4B; --accent-soft:#E7EEE9; --hair:#E4E2D9; --track:#ECEAE1;
+    --up:#C23B33; --down:#2E6CA6;
+    --serif:"Noto Serif JP",serif; --sans:"Noto Sans JP",system-ui,sans-serif; --mono:"Roboto Mono",ui-monospace,monospace;
+  }
+  @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+    --bg:#14171C; --surface:#1B1F26; --ink:#E7E9EC; --muted:#98A1AC; --accent:#78C2A6; --accent-soft:#1E2A26; --hair:#2A2F38; --track:#242A32; --up:#E5786E; --down:#7FB0DC; } }
+  :root[data-theme="dark"]{
+    --bg:#14171C; --surface:#1B1F26; --ink:#E7E9EC; --muted:#98A1AC; --accent:#78C2A6; --accent-soft:#1E2A26; --hair:#2A2F38; --track:#242A32; --up:#E5786E; --down:#7FB0DC; }
+  body{background:var(--bg); color:var(--ink); font-family:var(--sans); line-height:1.85; -webkit-font-smoothing:antialiased;}
+  .wrap{max-width:660px; margin:0 auto; padding:32px 20px 64px;}
+  .num{font-family:var(--mono); font-variant-numeric:tabular-nums;}
+  .mast{border-bottom:2px solid var(--ink); padding-bottom:14px;}
+  .brand{font-family:var(--serif); font-weight:700; font-size:2.4rem; letter-spacing:.04em; margin:0;}
+  .brand small{font-family:var(--sans); font-weight:500; font-size:.78rem; color:var(--muted); letter-spacing:.16em; display:block; margin-top:4px;}
+  .meta{display:flex; flex-wrap:wrap; gap:6px 16px; font-size:.82rem; color:var(--muted); margin-top:12px;}
+  .meta .num{color:var(--ink);}
+  .lead{font-family:var(--serif); font-size:1.16rem; line-height:1.9; margin:24px 0 0; text-wrap:pretty;}
+  section{margin-top:42px;}
+  .eyebrow{font-size:.72rem; letter-spacing:.22em; text-transform:uppercase; color:var(--accent); font-weight:700; margin:0 0 4px;}
+  h2{font-family:var(--serif); font-weight:700; font-size:1.5rem; margin:0 0 12px; text-wrap:balance;}
+  h3{font-family:var(--serif); font-weight:600; font-size:1.08rem; margin:0;}
+  p{margin:.5em 0;} .sub{color:var(--muted); font-size:.92rem; margin-bottom:16px;}
+  .buy{background:var(--surface); border:1px solid var(--hair); border-left:4px solid var(--accent); border-radius:10px; padding:4px 20px 18px;}
+  .pick{padding:20px 0; border-bottom:1px solid var(--hair);} .pick:last-of-type{border-bottom:none;}
+  .pick-head{display:flex; justify-content:space-between; align-items:baseline; gap:12px;}
+  .pick-head .tick{color:var(--muted); font-size:.76rem; margin-left:8px; letter-spacing:.05em;}
+  .price{font-family:var(--mono); font-weight:500; font-size:1.05rem; white-space:nowrap;}
+  .totbadge{font-size:.76rem; color:var(--muted); margin-top:2px;} .totbadge b{font-family:var(--mono); color:var(--accent); font-size:1rem;}
+  .bars{margin:12px 0 10px; display:flex; flex-direction:column; gap:6px;}
+  .bar{display:grid; grid-template-columns:3.2em 1fr 2.4em; align-items:center; gap:8px; font-size:.8rem;}
+  .bar .lb{color:var(--muted);} .bar .tr{height:8px; background:var(--track); border-radius:4px; overflow:hidden;}
+  .bar .fl{height:100%; background:var(--accent); border-radius:4px;} .bar .pt{font-family:var(--mono); font-variant-numeric:tabular-nums; text-align:right;}
+  .raw{font-size:.76rem; color:var(--muted); margin:2px 0 8px; line-height:1.7;} .raw b{color:var(--ink); font-family:var(--mono); font-weight:500;} .raw .up{color:var(--up);}
+  .pick p{font-size:.9rem; margin:.35em 0;}
+  .stop{color:var(--muted); font-size:.84rem;} .stop::before{content:"やめ時 "; color:var(--accent); font-weight:700;}
+  .total{display:flex; justify-content:space-between; align-items:baseline; margin-top:16px; padding-top:14px; border-top:2px solid var(--ink); font-weight:700;} .total .num{font-size:1.2rem;}
+  .after{font-size:.84rem; color:var(--muted); margin-top:12px;}
+  .pick details{margin-top:10px;} .pick summary{padding:8px 14px; font-size:.82rem;}
+  .tblwrap{overflow-x:auto;}
+  table{border-collapse:collapse; width:100%; font-size:.82rem; min-width:440px;}
+  th,td{padding:7px 8px; text-align:right; border-bottom:1px solid var(--hair); white-space:nowrap;}
+  th{color:var(--muted); font-weight:500; font-size:.72rem; letter-spacing:.04em;}
+  td.nm,th.nm{text-align:left;} td.nm{font-weight:500;}
+  td .num,.tot{font-family:var(--mono); font-variant-numeric:tabular-nums;} .tot{font-weight:700; color:var(--accent);}
+  tr.buy-row{background:var(--accent-soft);} tr.skip td{color:var(--muted);} .star{color:var(--accent); font-weight:700;}
+  .ideal{font-size:.92rem;}
+  .movers{display:grid; grid-template-columns:1fr 1fr; gap:22px;} @media(max-width:460px){ .movers{grid-template-columns:1fr;} }
+  .movers h3{font-size:.9rem; margin-bottom:8px;}
+  .mv{list-style:none; margin:0; padding:0;}
+  .mv li{display:flex; justify-content:space-between; gap:10px; padding:5px 0; border-bottom:1px dotted var(--hair); font-size:.88rem;}
+  .mv .r{font-family:var(--mono); font-variant-numeric:tabular-nums; font-weight:500; white-space:nowrap;}
+  .up .r{color:var(--up);} .down .r{color:var(--down);} .up h3{color:var(--up);} .down h3{color:var(--down);} .mv .s{color:var(--muted); font-size:.72rem;}
+  .learn{background:var(--surface); border:1px solid var(--hair); border-radius:10px; padding:18px 20px;} .learn p{font-size:.92rem;}
+  .watch{list-style:none; margin:0; padding:0;}
+  .watch li{padding:10px 0; border-bottom:1px solid var(--hair); font-size:.9rem;} .watch li:last-child{border-bottom:none;}
+  .watch .nm{font-weight:700;} .watch .tick{color:var(--muted); font-size:.76rem; margin-left:6px;}
+  .appendix{margin-top:52px; padding-top:22px; border-top:2px solid var(--ink);} .appendix h2{font-size:1.2rem;}
+  .steps{margin:0 0 18px; padding-left:1.3em;} .steps li{margin:.35em 0; font-size:.9rem;} .steps b{color:var(--accent);}
+  .gloss{list-style:none; margin:0; padding:0;} .gloss li{padding:7px 0; border-bottom:1px dotted var(--hair); font-size:.88rem; line-height:1.7;} .gloss li:last-child{border-bottom:none;} .gloss b{color:var(--accent);}
+  details{margin-top:16px; border:1px solid var(--hair); border-radius:8px; background:var(--surface);}
+  summary{cursor:pointer; padding:12px 16px; font-weight:700; font-size:.9rem; color:var(--accent);} details[open] summary{border-bottom:1px solid var(--hair);}
+  .det-body{padding:6px 16px 14px;}
+  .calc{list-style:none; margin:0; padding:0; font-size:.84rem;}
+  .calc li{display:flex; justify-content:space-between; gap:10px; padding:4px 0; border-bottom:1px dotted var(--hair);}
+  .calc .v{font-family:var(--mono); font-variant-numeric:tabular-nums; white-space:nowrap;}
+  .calc .sum{border-top:1px solid var(--ink); border-bottom:none; margin-top:4px; padding-top:6px; font-weight:700;}
+  .archive{margin-top:52px; padding-top:22px; border-top:2px solid var(--ink);}
+  .arch-issue > summary{font-family:var(--serif); font-size:1.05rem;}
+  footer{margin-top:40px; padding-top:18px; border-top:1px solid var(--hair); font-size:.76rem; color:var(--muted); line-height:1.7;}
+</style>
+<div class="wrap">
+  <header class="mast">
+    <h1 class="brand">株ノート<small>KABU-NOTE ・ 毎週土 / 毎月第1土</small></h1>
+    <div class="meta">
+      <span>第 <span class="num">2</span> 号</span>
+      <span>発行 <span class="num">2026-09-12</span></span>
+      <span>データ基準日 <span class="num">2026-06-19</span></span>
+    </div>
+  </header>
+
+  <p class="lead">今週の買いは先週と同じ顔ぶれです。資源の <b>ＩＮＰＥＸ</b>、不動産の <b>テーオーシー</b>、素材の <b>新日本電工</b>。合わせて ¥4,942（先週とほぼ同額）。無料データの都合で参照日が6月中旬とまだ12週遅れており、この1週間で大きな変化がなかったための結果です。</p>
+
+  <section>
+    <p class="eyebrow">今月の買い ・ ¥5,000 枠</p>
+    <h2>この3社を ¥4,942 で</h2>
+    <div class="buy">
+      <div class="pick">
+        <div class="pick-head">
+          <div><h3>ＩＮＰＥＸ<span class="tick">1605・鉱業</span></h3>
+            <div class="totbadge">総合 <b>81</b>点 ・ <span class="num">2</span>位</div></div>
+          <span class="price">¥3,500</span>
+        </div>
+        <div class="bars"><div class="bar"><span class="lb">質</span><span class="tr"><span class="fl" style="width:81%"></span></span><span class="pt">81</span></div><div class="bar"><span class="lb">勢い</span><span class="tr"><span class="fl" style="width:79%"></span></span><span class="pt">79</span></div><div class="bar"><span class="lb">割安</span><span class="tr"><span class="fl" style="width:82%"></span></span><span class="pt">82</span></div></div>
+        <p class="raw">営業利益率 <b>55.4%</b>(100点) ・ 自己資本 <b>61.0%</b>(63点) ・ PBR <b>0.86</b> ・ 勢い <b class="up">+80%</b></p>
+        <details><summary>点数の計算を見る</summary><div class="det-body"><ul class="calc"><li><span>質 ＝ (営業利益率100 ＋ 自己資本63) ÷ 2</span><span class="v">81</span></li><li><span>勢い</span><span class="v">79</span></li><li><span>割安（PBR 0.86）</span><span class="v">82</span></li><li class="sum"><span>合計 ＝ 81×0.5 ＋ 79×0.3 ＋ 82×0.2</span><span class="v">81</span></li></ul></div></details>
+        <p>日本最大の石油・天然ガス開発会社。稼ぐ力（利益率55%）が全社トップ級で、それでいて割安（PBR 1倍未満）、株価の勢いも良い。3つのものさしすべてが高い先週からの継続銘柄。</p>
+        <p class="stop">原油・ガス価格の長期下落で利益率が崩れたら見直し。または −20% で損切り。</p>
+      </div>
+      <div class="pick">
+        <div class="pick-head">
+          <div><h3>テーオーシー<span class="tick">8841・不動産業</span></h3>
+            <div class="totbadge">総合 <b>82</b>点 ・ <span class="num">1</span>位</div></div>
+          <span class="price">¥957</span>
+        </div>
+        <div class="bars"><div class="bar"><span class="lb">質</span><span class="tr"><span class="fl" style="width:89%"></span></span><span class="pt">89</span></div><div class="bar"><span class="lb">勢い</span><span class="tr"><span class="fl" style="width:69%"></span></span><span class="pt">69</span></div><div class="bar"><span class="lb">割安</span><span class="tr"><span class="fl" style="width:83%"></span></span><span class="pt">83</span></div></div>
+        <p class="raw">営業利益率 <b>16.2%</b>(80点) ・ 自己資本 <b>85.2%</b>(97点) ・ PBR <b>0.86</b> ・ 勢い <b class="up">+54%</b></p>
+        <details><summary>点数の計算を見る</summary><div class="det-body"><ul class="calc"><li><span>質 ＝ (営業利益率80 ＋ 自己資本97) ÷ 2</span><span class="v">89</span></li><li><span>勢い</span><span class="v">69</span></li><li><span>割安（PBR 0.86）</span><span class="v">83</span></li><li class="sum"><span>合計 ＝ 89×0.5 ＋ 69×0.3 ＋ 83×0.2</span><span class="v">82</span></li></ul></div></details>
+        <p>大井町などでオフィス・商業ビルを賃貸する不動産会社。借金が少なく財務が非常に堅く（自己資本85%）、株価は純資産より安い。総合1位で先週に続いての選出。</p>
+        <p class="stop">空室率の悪化や賃料下落が続いたら見直し。または −20%。</p>
+      </div>
+      <div class="pick">
+        <div class="pick-head">
+          <div><h3>新日本電工<span class="tick">5563・鉄鋼</span></h3>
+            <div class="totbadge">総合 <b>77</b>点 ・ <span class="num">11</span>位</div></div>
+          <span class="price">¥485</span>
+        </div>
+        <div class="bars"><div class="bar"><span class="lb">質</span><span class="tr"><span class="fl" style="width:72%"></span></span><span class="pt">72</span></div><div class="bar"><span class="lb">勢い</span><span class="tr"><span class="fl" style="width:85%"></span></span><span class="pt">85</span></div><div class="bar"><span class="lb">割安</span><span class="tr"><span class="fl" style="width:78%"></span></span><span class="pt">78</span></div></div>
+        <p class="raw">営業利益率 <b>10.3%</b>(60点) ・ 自己資本 <b>72.8%</b>(84点) ・ PBR <b>0.93</b> ・ 勢い <b class="up">+101%</b></p>
+        <details><summary>点数の計算を見る</summary><div class="det-body"><ul class="calc"><li><span>質 ＝ (営業利益率60 ＋ 自己資本84) ÷ 2</span><span class="v">72</span></li><li><span>勢い</span><span class="v">85</span></li><li><span>割安（PBR 0.93）</span><span class="v">78</span></li><li class="sum"><span>合計 ＝ 72×0.5 ＋ 85×0.3 ＋ 78×0.2</span><span class="v">77</span></li></ul></div></details>
+        <p>合金鉄や機能材料（電池材料など）のメーカー。割安で勢いがあり財務も健全。1株 ¥485 と安く、少額の積立に組み込みやすい。</p>
+        <p class="stop">主力の合金鉄の市況が悪化したら見直し。または −20%。</p>
+      </div>
+      <div class="total"><span>合計（業種を分散）</span><span class="num">¥4,942</span></div>
+    </div>
+    <p class="after">実際の買付株価は今の相場で変わります。買う前に SBI で最終確認を。各点数の意味は巻末「数字の見方」に。</p>
+  </section>
+
+  <section>
+    <p class="eyebrow">分析 ・ ランキングでの位置</p>
+    <h2>なぜこの銘柄で、他が入らなかったか</h2>
+    <p class="sub">3つのものさしで採点した上位です。★が今月の買い。</p>
+    <div class="tblwrap"><table>
+      <thead><tr><th>順位</th><th class="nm">会社</th><th>質</th><th>勢い</th><th>割安</th><th>合計</th><th>株価</th></tr></thead>
+      <tbody>
+<tr class="buy-row"><td class="num">1<span class="star"> ★</span></td><td class="nm">テーオーシー</td><td class="num">89</td><td class="num">69</td><td class="num">83</td><td class="tot">82</td><td class="num">957</td></tr>
+<tr class="buy-row"><td class="num">2<span class="star"> ★</span></td><td class="nm">ＩＮＰＥＸ</td><td class="num">81</td><td class="num">79</td><td class="num">82</td><td class="tot">81</td><td class="num">3,500</td></tr>
+<tr class="skip"><td class="num">3</td><td class="nm">石油資源開発 <span class="s">※同業・予算外</span></td><td class="num">74</td><td class="num">79</td><td class="num">95</td><td class="tot">80</td><td class="num">1,636</td></tr>
+<tr class=""><td class="num">4</td><td class="nm">ユニオンツール</td><td class="num">97</td><td class="num">99</td><td class="num">6</td><td class="tot">79</td><td class="num">25,090</td></tr>
+<tr class=""><td class="num">5</td><td class="nm">エンプラス</td><td class="num">88</td><td class="num">97</td><td class="num">29</td><td class="tot">79</td><td class="num">13,520</td></tr>
+<tr class=""><td class="num">6</td><td class="nm">日本電子材料</td><td class="num">90</td><td class="num">97</td><td class="num">21</td><td class="tot">79</td><td class="num">8,060</td></tr>
+<tr class=""><td class="num">7</td><td class="nm">ＪＣＵ</td><td class="num">98</td><td class="num">89</td><td class="num">13</td><td class="tot">78</td><td class="num">7,460</td></tr>
+<tr class=""><td class="num">8</td><td class="nm">メック</td><td class="num">96</td><td class="num">98</td><td class="num">4</td><td class="tot">78</td><td class="num">11,340</td></tr>
+<tr class=""><td class="num">9</td><td class="nm">スカパーＪＳＡＴ</td><td class="num">90</td><td class="num">97</td><td class="num">17</td><td class="tot">77</td><td class="num">3,200</td></tr>
+<tr class=""><td class="num">10</td><td class="nm">Ｋ＆Ｏエナジーグループ</td><td class="num">85</td><td class="num">66</td><td class="num">73</td><td class="tot">77</td><td class="num">1,945</td></tr>
+<tr class="buy-row"><td class="num">11<span class="star"> ★</span></td><td class="nm">新日本電工</td><td class="num">72</td><td class="num">85</td><td class="num">78</td><td class="tot">77</td><td class="num">485</td></tr>
+      </tbody>
+    </table></div>
+    <p class="after">総合3位の石油資源開発は、2位のＩＮＰＥＸと同じ鉱業なので業種分散のため見送り。4〜10位（ユニオンツール・エンプラス・日本電子材料・ＪＣＵ・メックなど）は質や勢いが高い一方、割安の点が低く、1株が¥5,000を超えるものが多いため今週の枠には入りません。新日本電工は総合11位ですが、¥485と安く、残った予算に収まる最上位でした。</p>
+  </section>
+
+  <section>
+    <p class="eyebrow">理想の1社 ・ 金額の縛りなし</p>
+    <h2>買えなくても本命は記録する</h2>
+    <p class="ideal">総合1位は <b>テーオーシー</b>（今週も枠内で買えました）。一方、質は高いのに1株が高くて届かないのが <b>ユニオンツール</b>（¥25,090）や <b>エンプラス</b>（¥13,520）。こうした「買いたいのに届かない株」も毎回ここに記録し、その後の値動きを一緒に追いかけます。</p>
+  </section>
+
+  <section>
+    <p class="eyebrow">今週動いた株 ・ 直近5営業日</p>
+    <h2>相場の関心はどこへ</h2>
+    <div class="movers">
+      <div class="up"><h3>上がった（赤）</h3><ul class="mv"><li class="up"><span>三井ハイテック <span class="s">電気機器</span></span><span class="r">+48.5%</span></li><li class="up"><span>サンコール <span class="s">金属製品</span></span><span class="r">+45.8%</span></li><li class="up"><span>ブイ・テクノロジー <span class="s">精密機器</span></span><span class="r">+37.7%</span></li><li class="up"><span>村田製作所 <span class="s">電気機器</span></span><span class="r">+37.3%</span></li><li class="up"><span>日本ケミコン <span class="s">電気機器</span></span><span class="r">+35.8%</span></li><li class="up"><span>キオクシアホールディングス <span class="s">電気機器</span></span><span class="r">+33.7%</span></li></ul></div>
+      <div class="down"><h3>下がった（青）</h3><ul class="mv"><li class="down"><span>アトム <span class="s">小売業</span></span><span class="r">−46.8%</span></li><li class="down"><span>アストロスケールホールディングス <span class="s">サービス業</span></span><span class="r">−37.1%</span></li><li class="down"><span>ｉｓｐａｃｅ <span class="s">サービス業</span></span><span class="r">−21.2%</span></li><li class="down"><span>Ｓｙｎｓｐｅｃｔｉｖｅ <span class="s">情報･通信業</span></span><span class="r">−18.2%</span></li><li class="down"><span>サンバイオ <span class="s">医薬品</span></span><span class="r">−14.9%</span></li><li class="down"><span>ニトリホールディングス <span class="s">小売業</span></span><span class="r">−12.4%</span></li></ul></div>
+    </div>
+    <p class="sub" style="margin-top:16px;">電子部品・半導体まわり（村田製作所・日本ケミコン・キオクシアホールディングスなど）が値上がり上位に入る一方、宇宙関連（アストロスケールホールディングス・ｉｓｐａｃｅ・Ｓｙｎｓｐｅｃｔｉｖｅ）は先週に続き値下がり上位。アストロスケールＨＤとｉｓｐａｃｅは2週連続の値下がり上位です。日本では株価が上がると<b>赤</b>、下がると<b>青</b>で表します。</p>
+  </section>
+
+  <section>
+    <p class="eyebrow">今週の学び</p>
+    <h2>長期と複利</h2>
+    <div class="learn"><p>複利とは、増えた利益がさらに利益を生む仕組みです。1年で5%増えたお金をそのまま置いておくと、翌年はその増えた分にも5%が付きます。短期では小さな差でも、10年・20年と続けるほど差が大きく開いていきます。少額でも早く始めて長く続けることが、複利を味方につける近道です。次号は「PBRの意味」を扱います。</p></div>
+  </section>
+
+  <section>
+    <p class="eyebrow">ウォッチ ・ 来月に向けて</p>
+    <h2>枠には届かないが気になる会社</h2>
+    <ul class="watch"><li><span class="nm">石油資源開発</span><span class="tick">1662・鉱業</span> ― 総合3位。ＩＮＰＥＸと同業のため今週は見送り。割安95点と非常に高い。</li><li><span class="nm">ユニオンツール</span><span class="tick">6278・機械</span> ― 総合4位。質97・勢い99と非常に高いが、割安はわずか6点。1株¥25,090と高額。</li><li><span class="nm">ＪＣＵ</span><span class="tick">4975・化学</span> ― 総合7位。半導体メッキ薬品メーカーで営業利益率41%、質98点はトップ級。1株¥7,460で予算超過。</li></ul>
+  </section>
+
+
+  <section class="appendix">
+    <p class="eyebrow">付録 ・ 毎号のせます</p>
+    <h2>この号の作り方と、数字の見方</h2>
+    <ol class="steps">
+      <li><b>採点</b>：安全なふるいを通した約1,000〜2,000社を、質・勢い・割安の3つで採点。単位の違う数値は「全体の中での順位（0〜100点）」に直す。</li>
+      <li><b>合計</b>：質 × 0.5 ＋ 勢い × 0.3 ＋ 割安 × 0.2 で合計点を出し、高い順に並べる。</li>
+      <li><b>組む</b>：上位から、¥5,000 に収まるよう業種をばらして詰める。届かない本命は「理想の1社」へ。</li>
+    </ol>
+    <ul class="gloss">
+      <li><b>点数（0〜100）</b> … その項目が全体で上から何位か。高いほど上位。</li>
+      <li><b>質</b> … 営業利益率（本業で稼ぐ力）と 自己資本比率（借金の少なさ・安全度）の点数の平均。</li>
+      <li><b>勢い</b> … 直近1年（直近1か月を除く）の株価の上がり具合。</li>
+      <li><b>割安（PBR）</b> … 株価 ÷ 1株あたり純資産。低いほど割安。1倍未満なら「純資産より安い値段」。</li>
+      <li><b>合計</b> … 質 × 0.5 ＋ 勢い × 0.3 ＋ 割安 × 0.2。</li>
+    </ul>
+  </section>
+
+<section class="archive"><p class="eyebrow">バックナンバー</p><h2>過去号</h2><details class="arch-issue"><summary>第1号 ・ 2026-09-07</summary><div class="det-body">
+  <p class="lead">今週は、稼ぐ力と財務の堅さがありながら割安な 3 社。資源の <b>ＩＮＰＥＸ</b>、不動産の <b>テーオーシー</b>、素材の <b>新日本電工</b>。合わせて ¥4,942 です。</p>
+
+  <section>
+    <p class="eyebrow">今月の買い ・ ¥5,000 枠</p>
+    <h2>この3社を ¥4,942 で</h2>
+    <div class="buy">
+      <div class="pick">
+        <div class="pick-head">
+          <div><h3>ＩＮＰＥＸ<span class="tick">1605・鉱業</span></h3>
+            <div class="totbadge">総合 <b>83</b>点 ・ <span class="num">1</span>位</div></div>
+          <span class="price">¥3,495</span>
+        </div>
+        <div class="bars"><div class="bar"><span class="lb">質</span><span class="tr"><span class="fl" style="width:81%"></span></span><span class="pt">81</span></div><div class="bar"><span class="lb">勢い</span><span class="tr"><span class="fl" style="width:87%"></span></span><span class="pt">87</span></div><div class="bar"><span class="lb">割安</span><span class="tr"><span class="fl" style="width:83%"></span></span><span class="pt">83</span></div></div>
+        <p class="raw">営業利益率 <b>55%</b>(100点) ・ 自己資本 <b>61%</b>(63点) ・ PBR <b>0.86</b> ・ 勢い <b class="up">+104%</b></p>
+        <details><summary>点数の計算を見る</summary><div class="det-body"><ul class="calc"><li><span>質 ＝ (営業利益率100 ＋ 自己資本63) ÷ 2</span><span class="v">81</span></li><li><span>勢い</span><span class="v">87</span></li><li><span>割安（PBR 0.86）</span><span class="v">83</span></li><li class="sum"><span>合計 ＝ 81×0.5 ＋ 87×0.3 ＋ 83×0.2</span><span class="v">83</span></li></ul></div></details>
+        <p>日本最大の石油・天然ガス開発会社。稼ぐ力（利益率）が全社トップ級で、それでいて割安（PBR 1倍未満）、株価の勢いも良い。3つのものさしすべてが高い。</p>
+        <p class="stop">原油・ガス価格の長期下落で利益率が崩れたら見直し。または −20% で損切り。</p>
+      </div>
+      <div class="pick">
+        <div class="pick-head">
+          <div><h3>テーオーシー<span class="tick">8841・不動産</span></h3>
+            <div class="totbadge">総合 <b>81</b>点 ・ <span class="num">3</span>位</div></div>
+          <span class="price">¥968</span>
+        </div>
+        <div class="bars"><div class="bar"><span class="lb">質</span><span class="tr"><span class="fl" style="width:89%"></span></span><span class="pt">89</span></div><div class="bar"><span class="lb">勢い</span><span class="tr"><span class="fl" style="width:67%"></span></span><span class="pt">67</span></div><div class="bar"><span class="lb">割安</span><span class="tr"><span class="fl" style="width:82%"></span></span><span class="pt">82</span></div></div>
+        <p class="raw">営業利益率 <b>16%</b>(80点) ・ 自己資本 <b>85%</b>(97点) ・ PBR <b>0.87</b> ・ 勢い <b class="up">+49%</b></p>
+        <details><summary>点数の計算を見る</summary><div class="det-body"><ul class="calc"><li><span>質 ＝ (営業利益率80 ＋ 自己資本97) ÷ 2</span><span class="v">89</span></li><li><span>勢い</span><span class="v">67</span></li><li><span>割安（PBR 0.87）</span><span class="v">82</span></li><li class="sum"><span>合計 ＝ 89×0.5 ＋ 67×0.3 ＋ 82×0.2</span><span class="v">81</span></li></ul></div></details>
+        <p>大井町などでオフィス・商業ビルを賃貸する不動産会社。借金が少なく財務が非常に堅く（自己資本85%）、株価は純資産より安い。安定した賃料収入が強み。</p>
+        <p class="stop">空室率の悪化や賃料下落が続いたら見直し。または −20%。</p>
+      </div>
+      <div class="pick">
+        <div class="pick-head">
+          <div><h3>新日本電工<span class="tick">5563・鉄鋼</span></h3>
+            <div class="totbadge">総合 <b>76</b>点 ・ <span class="num">17</span>位</div></div>
+          <span class="price">¥479</span>
+        </div>
+        <div class="bars"><div class="bar"><span class="lb">質</span><span class="tr"><span class="fl" style="width:71%"></span></span><span class="pt">71</span></div><div class="bar"><span class="lb">勢い</span><span class="tr"><span class="fl" style="width:83%"></span></span><span class="pt">83</span></div><div class="bar"><span class="lb">割安</span><span class="tr"><span class="fl" style="width:79%"></span></span><span class="pt">79</span></div></div>
+        <p class="raw">営業利益率 <b>10%</b>(59点) ・ 自己資本 <b>73%</b>(84点) ・ PBR <b>0.92</b> ・ 勢い <b class="up">+88%</b></p>
+        <details><summary>点数の計算を見る</summary><div class="det-body"><ul class="calc"><li><span>質 ＝ (営業利益率59 ＋ 自己資本84) ÷ 2</span><span class="v">71</span></li><li><span>勢い</span><span class="v">83</span></li><li><span>割安（PBR 0.92）</span><span class="v">79</span></li><li class="sum"><span>合計 ＝ 71×0.5 ＋ 83×0.3 ＋ 79×0.2</span><span class="v">76</span></li></ul></div></details>
+        <p>合金鉄や機能材料（電池材料など）のメーカー。割安で勢いがあり財務も健全。1株 ¥479 と安く、少額の積立に組み込みやすい。</p>
+        <p class="stop">主力の合金鉄の市況が悪化したら見直し。または −20%。</p>
+      </div>
+      <div class="total"><span>合計（業種を分散）</span><span class="num">¥4,942</span></div>
+    </div>
+    <p class="after">実際の買付株価は今の相場で変わります。買う前に SBI で最終確認を。各点数の意味は巻末「数字の見方」に。</p>
+  </section>
+
+  <section>
+    <p class="eyebrow">分析 ・ ランキングでの位置</p>
+    <h2>なぜこの銘柄で、他が入らなかったか</h2>
+    <p class="sub">3つのものさしで採点した上位です。★が今月の買い。</p>
+    <div class="tblwrap"><table>
+      <thead><tr><th>順位</th><th class="nm">会社</th><th>質</th><th>勢い</th><th>割安</th><th>合計</th><th>株価</th></tr></thead>
+      <tbody>
+<tr class="buy-row"><td class="num">1<span class="star"> ★</span></td><td class="nm">ＩＮＰＥＸ</td><td class="num">81</td><td class="num">87</td><td class="num">83</td><td class="tot">83</td><td class="num">3,495</td></tr>
+<tr class="skip"><td class="num">2</td><td class="nm">石油資源開発 <span class="s">※同業・予算外</span></td><td class="num">74</td><td class="num">86</td><td class="num">95</td><td class="tot">82</td><td class="num">1,655</td></tr>
+<tr class="buy-row"><td class="num">3<span class="star"> ★</span></td><td class="nm">テーオーシー</td><td class="num">89</td><td class="num">67</td><td class="num">82</td><td class="tot">81</td><td class="num">968</td></tr>
+<tr class=""><td class="num">4</td><td class="nm">立川ブラインド工業</td><td class="num">85</td><td class="num">71</td><td class="num">80</td><td class="tot">80</td><td class="num">2,474</td></tr>
+<tr class=""><td class="num">5</td><td class="nm">エンプラス</td><td class="num">87</td><td class="num">98</td><td class="num">33</td><td class="tot">80</td><td class="num">12,300</td></tr>
+<tr class=""><td class="num">6</td><td class="nm">ＳＥＣカーボン</td><td class="num">89</td><td class="num">53</td><td class="num">94</td><td class="tot">79</td><td class="num">2,464</td></tr>
+<tr class=""><td class="num">7</td><td class="nm">ＪＣＵ</td><td class="num">98</td><td class="num">91</td><td class="num">14</td><td class="tot">79</td><td class="num">7,320</td></tr>
+<tr class=""><td class="num">8</td><td class="nm">ユニオンツール</td><td class="num">97</td><td class="num">99</td><td class="num">5</td><td class="tot">79</td><td class="num">26,430</td></tr>
+<tr class=""><td class="num">9</td><td class="nm">メック</td><td class="num">96</td><td class="num">98</td><td class="num">5</td><td class="tot">78</td><td class="num">10,800</td></tr>
+<tr class=""><td class="num">10</td><td class="nm">日本電子材料</td><td class="num">90</td><td class="num">97</td><td class="num">20</td><td class="tot">78</td><td class="num">8,330</td></tr>
+<tr class="buy-row"><td class="num">17<span class="star"> ★</span></td><td class="nm">新日本電工</td><td class="num">71</td><td class="num">83</td><td class="num">79</td><td class="tot">76</td><td class="num">479</td></tr>
+      </tbody>
+    </table></div>
+    <p class="after">総合2位の石油資源開発は、1位のＩＮＰＥＸと同じ鉱業なので業種分散のため見送り。4〜10位（立川ブラインド工業・エンプラス・ＳＥＣカーボン・ＪＣＵなど）は質や勢いが高い一方、割安の点が低い銘柄が多く、1株が¥5,000を超えるものもあるため今週の枠には入りません。新日本電工は総合17位ですが、¥479と安く、残った予算に収まる最上位でした。</p>
+  </section>
+
+  <section>
+    <p class="eyebrow">理想の1社 ・ 金額の縛りなし</p>
+    <h2>買えなくても本命は記録する</h2>
+    <p class="ideal">総合1位は <b>ＩＮＰＥＸ</b>（今週は枠内で買えました）。一方、質は高いのに1株が高くて届かないのが <b>ユニオンツール</b>（¥26,430）や <b>ＪＣＵ</b>（¥7,320）。こうした「買いたいのに届かない株」も毎回ここに記録し、その後の値動きを一緒に追いかけます。</p>
+  </section>
+
+  <section>
+    <p class="eyebrow">今週動いた株 ・ 直近5営業日</p>
+    <h2>相場の関心はどこへ</h2>
+    <div class="movers">
+      <div class="up"><h3>上がった（赤）</h3><ul class="mv"><li class="up"><span>ＫＯＫＵＳＡＩ　ＥＬＥＣＴＲＩＣ <span class="s">電気機器</span></span><span class="r">+37.4%</span></li><li class="up"><span>イビデン <span class="s">電気機器</span></span><span class="r">+33.4%</span></li><li class="up"><span>東京エレクトロン <span class="s">電気機器</span></span><span class="r">+32.2%</span></li><li class="up"><span>サムコ <span class="s">機械</span></span><span class="r">+29.3%</span></li><li class="up"><span>太陽誘電 <span class="s">電気機器</span></span><span class="r">+28.8%</span></li><li class="up"><span>ＣＫＤ <span class="s">機械</span></span><span class="r">+26.8%</span></li></ul></div>
+      <div class="down"><h3>下がった（青）</h3><ul class="mv"><li class="down"><span>武蔵精密工業 <span class="s">輸送用機器</span></span><span class="r">−33.8%</span></li><li class="down"><span>アストロスケールホールディングス <span class="s">サービス業</span></span><span class="r">−28.0%</span></li><li class="down"><span>フィックスターズ <span class="s">情報通信</span></span><span class="r">−27.5%</span></li><li class="down"><span>ＡＮＹＣＯＬＯＲ <span class="s">情報通信</span></span><span class="r">−22.5%</span></li><li class="down"><span>ｉｓｐａｃｅ <span class="s">サービス業</span></span><span class="r">−15.9%</span></li><li class="down"><span>エイチ・アイ・エス <span class="s">サービス業</span></span><span class="r">−14.2%</span></li></ul></div>
+    </div>
+    <p class="sub" style="margin-top:16px;">半導体製造装置まわり（東京エレクトロン・ＫＯＫＵＳＡＩ　ＥＬＥＣＴＲＩＣなど）が軒並み買われる一方、自動車部品や宇宙関連、情報通信・サービス株は決算や個別材料で下落。日本では株価が上がると<b>赤</b>、下がると<b>青</b>で表します。</p>
+  </section>
+
+  <section>
+    <p class="eyebrow">今週の学び</p>
+    <h2>分散（1銘柄集中のリスク）</h2>
+    <div class="learn"><p>1つの会社だけに集中して投資すると、その会社に何かあったとき資産全体が大きく傷みます。業種や会社をいくつかに分けて持つことで、1社の不調が全体に与える影響を和らげられます。今週の買いが資源・不動産・鉄鋼の3業種に分かれているのもこの考え方から。次号は「長期と複利」を扱います。</p></div>
+  </section>
+
+  <section>
+    <p class="eyebrow">ウォッチ ・ 来月に向けて</p>
+    <h2>枠には届かないが気になる会社</h2>
+    <ul class="watch"><li><span class="nm">立川ブラインド工業</span><span class="tick">7989・金属製品</span> ― 総合4位。質・割安ともバランス良く、¥2,474と手が届く水準。来週以降の有力候補。</li><li><span class="nm">ＪＣＵ</span><span class="tick">4975・化学</span> ― 半導体メッキ薬品。営業利益率41%で質は全社トップ級（98点）。ただPBRが高く割安は14点、1株¥7,320。</li><li><span class="nm">エンプラス</span><span class="tick">6961・電気機器</span> ― 質87・勢い98と高いが割安33。値がやや高め（¥12,300）。</li></ul>
+  </section>
+</div></details>
+<details class="arch-issue"><summary>第0号 ・ 2026-09-06</summary><div class="det-body">
+  <p class="lead">今月は、稼ぐ力と財務の堅さがありながら割安な 3 社。資源の <b>ＩＮＰＥＸ</b>、不動産の <b>テーオーシー</b>、素材の <b>新日本電工</b>。合わせて ¥4,983 です。</p>
+
+  <section>
+    <p class="eyebrow">今月の買い ・ ¥5,000 枠</p>
+    <h2>この3社を ¥4,983 で</h2>
+    <div class="buy">
+      <div class="pick">
+        <div class="pick-head">
+          <div><h3>ＩＮＰＥＸ<span class="tick">1605・鉱業</span></h3>
+            <div class="totbadge">総合 <b>83</b>点 ・ <span class="num">1</span>位</div></div>
+          <span class="price">¥3,559</span>
+        </div>
+        <div class="bars"><div class="bar"><span class="lb">質</span><span class="tr"><span class="fl" style="width:81%"></span></span><span class="pt">81</span></div><div class="bar"><span class="lb">勢い</span><span class="tr"><span class="fl" style="width:86%"></span></span><span class="pt">86</span></div><div class="bar"><span class="lb">割安</span><span class="tr"><span class="fl" style="width:81%"></span></span><span class="pt">81</span></div></div>
+        <p class="raw">営業利益率 <b>55%</b>(100点) ・ 自己資本 <b>61%</b>(63点) ・ PBR <b>0.87</b> ・ 勢い <b class="up">+99%</b></p>
+        <details><summary>点数の計算を見る</summary><div class="det-body"><ul class="calc"><li><span>質 ＝ (営業利益率100 ＋ 自己資本63) ÷ 2</span><span class="v">81</span></li><li><span>勢い</span><span class="v">86</span></li><li><span>割安（PBR 0.87）</span><span class="v">81</span></li><li class="sum"><span>合計 ＝ 81×0.5 ＋ 86×0.3 ＋ 81×0.2</span><span class="v">83</span></li></ul></div></details>
+        <p>日本最大の石油・天然ガス開発会社。稼ぐ力（利益率）が全社トップ級で、それでいて割安（PBR 1倍未満）、株価の勢いも良い。3つのものさしすべてが高い。</p>
+        <p class="stop">原油・ガス価格の長期下落で利益率が崩れたら見直し。または −20% で損切り。</p>
+      </div>
+      <div class="pick">
+        <div class="pick-head">
+          <div><h3>テーオーシー<span class="tick">8841・不動産</span></h3>
+            <div class="totbadge">総合 <b>81</b>点 ・ <span class="num">3</span>位</div></div>
+          <span class="price">¥964</span>
+        </div>
+        <div class="bars"><div class="bar"><span class="lb">質</span><span class="tr"><span class="fl" style="width:89%"></span></span><span class="pt">89</span></div><div class="bar"><span class="lb">勢い</span><span class="tr"><span class="fl" style="width:68%"></span></span><span class="pt">68</span></div><div class="bar"><span class="lb">割安</span><span class="tr"><span class="fl" style="width:82%"></span></span><span class="pt">82</span></div></div>
+        <p class="raw">営業利益率 <b>16%</b>(80点) ・ 自己資本 <b>85%</b>(97点) ・ PBR <b>0.86</b> ・ 勢い <b class="up">+49%</b></p>
+        <details><summary>点数の計算を見る</summary><div class="det-body"><ul class="calc"><li><span>質 ＝ (営業利益率80 ＋ 自己資本97) ÷ 2</span><span class="v">89</span></li><li><span>勢い</span><span class="v">68</span></li><li><span>割安（PBR 0.86）</span><span class="v">82</span></li><li class="sum"><span>合計 ＝ 89×0.5 ＋ 68×0.3 ＋ 82×0.2</span><span class="v">81</span></li></ul></div></details>
+        <p>大井町などでオフィス・商業ビルを賃貸する不動産会社。借金が少なく財務が非常に堅く（自己資本85%）、株価は純資産より安い。安定した賃料収入が強み。</p>
+        <p class="stop">空室率の悪化や賃料下落が続いたら見直し。または −20%。</p>
+      </div>
+      <div class="pick">
+        <div class="pick-head">
+          <div><h3>新日本電工<span class="tick">5563・鉄鋼</span></h3>
+            <div class="totbadge">総合 <b>76</b>点 ・ <span class="num">16</span>位</div></div>
+          <span class="price">¥460</span>
+        </div>
+        <div class="bars"><div class="bar"><span class="lb">質</span><span class="tr"><span class="fl" style="width:71%"></span></span><span class="pt">71</span></div><div class="bar"><span class="lb">勢い</span><span class="tr"><span class="fl" style="width:82%"></span></span><span class="pt">82</span></div><div class="bar"><span class="lb">割安</span><span class="tr"><span class="fl" style="width:80%"></span></span><span class="pt">80</span></div></div>
+        <p class="raw">営業利益率 <b>10%</b>(59点) ・ 自己資本 <b>73%</b>(83点) ・ PBR <b>0.88</b> ・ 勢い <b class="up">+85%</b></p>
+        <details><summary>点数の計算を見る</summary><div class="det-body"><ul class="calc"><li><span>質 ＝ (営業利益率59 ＋ 自己資本83) ÷ 2</span><span class="v">71</span></li><li><span>勢い</span><span class="v">82</span></li><li><span>割安（PBR 0.88）</span><span class="v">80</span></li><li class="sum"><span>合計 ＝ 71×0.5 ＋ 82×0.3 ＋ 80×0.2</span><span class="v">76</span></li></ul></div></details>
+        <p>合金鉄や機能材料（電池材料など）のメーカー。割安で勢いがあり財務も健全。1株 ¥460 と安く、少額の積立に組み込みやすい。</p>
+        <p class="stop">主力の合金鉄の市況が悪化したら見直し。または −20%。</p>
+      </div>
+      <div class="total"><span>合計（業種を分散）</span><span class="num">¥4,983</span></div>
+    </div>
+    <p class="after">実際の買付株価は今の相場で変わります。買う前に SBI で最終確認を。各点数の意味は巻末「数字の見方」に。</p>
+  </section>
+
+  <section>
+    <p class="eyebrow">分析 ・ ランキングでの位置</p>
+    <h2>なぜこの銘柄で、他が入らなかったか</h2>
+    <p class="sub">3つのものさしで採点した上位です。★が今月の買い。</p>
+    <div class="tblwrap"><table>
+      <thead><tr><th>順位</th><th class="nm">会社</th><th>質</th><th>勢い</th><th>割安</th><th>合計</th><th>株価</th></tr></thead>
+      <tbody>
+<tr class="buy-row"><td class="num">1<span class="star"> ★</span></td><td class="nm">ＩＮＰＥＸ</td><td class="num">81</td><td class="num">86</td><td class="num">81</td><td class="tot">83</td><td class="num">3,559</td></tr>
+<tr class="skip"><td class="num">2</td><td class="nm">石油資源開発 <span class="s">※同業・予算外</span></td><td class="num">74</td><td class="num">84</td><td class="num">94</td><td class="tot">81</td><td class="num">1,658</td></tr>
+<tr class="buy-row"><td class="num">3<span class="star"> ★</span></td><td class="nm">テーオーシー</td><td class="num">89</td><td class="num">68</td><td class="num">82</td><td class="tot">81</td><td class="num">964</td></tr>
+<tr class=""><td class="num">4</td><td class="nm">立川ブラインド工業</td><td class="num">85</td><td class="num">72</td><td class="num">79</td><td class="tot">80</td><td class="num">2,435</td></tr>
+<tr class=""><td class="num">5</td><td class="nm">エンプラス</td><td class="num">87</td><td class="num">98</td><td class="num">33</td><td class="tot">80</td><td class="num">11,920</td></tr>
+<tr class=""><td class="num">6</td><td class="nm">ＪＣＵ</td><td class="num">98</td><td class="num">91</td><td class="num">14</td><td class="tot">79</td><td class="num">6,960</td></tr>
+<tr class=""><td class="num">7</td><td class="nm">ユニオンツール</td><td class="num">97</td><td class="num">99</td><td class="num">6</td><td class="tot">79</td><td class="num">24,520</td></tr>
+<tr class=""><td class="num">8</td><td class="nm">日本電子材料</td><td class="num">90</td><td class="num">97</td><td class="num">22</td><td class="tot">79</td><td class="num">7,700</td></tr>
+<tr class="buy-row"><td class="num">16<span class="star"> ★</span></td><td class="nm">新日本電工</td><td class="num">71</td><td class="num">82</td><td class="num">80</td><td class="tot">76</td><td class="num">460</td></tr>
+      </tbody>
+    </table></div>
+    <p class="after">総合2位の石油資源開発は、1位のＩＮＰＥＸと同じ鉱業なので業種分散のため見送り。5〜8位（エンプラス・ＪＣＵ等）は質と勢いが高い一方、割安の点が低く（値が高め）、さらに1株が¥5,000を超えるため今月の枠には入りません。新日本電工は総合16位ですが、¥460と安く、残った予算に収まる最上位でした。</p>
+  </section>
+
+  <section>
+    <p class="eyebrow">理想の1社 ・ 金額の縛りなし</p>
+    <h2>買えなくても本命は記録する</h2>
+    <p class="ideal">総合1位は <b>ＩＮＰＥＸ</b>（今月は枠内で買えました）。一方、質は高いのに1株が高くて届かないのが <b>ユニオンツール</b>（¥24,520）や <b>ＪＣＵ</b>（¥6,960）。こうした「買いたいのに届かない株」も毎月ここに記録し、その後の値動きを一緒に追いかけます。</p>
+  </section>
+
+  <section>
+    <p class="eyebrow">今週動いた株 ・ 直近5営業日</p>
+    <h2>相場の関心はどこへ</h2>
+    <div class="movers">
+      <div class="up"><h3>上がった（赤）</h3><ul class="mv"><li class="up"><span>タスキHD <span class="s">不動産</span></span><span class="r">+17.3%</span></li><li class="up"><span>富士急行 <span class="s">陸運</span></span><span class="r">+15.1%</span></li><li class="up"><span>東京エレクトロン <span class="s">半導体装置</span></span><span class="r">+14.4%</span></li><li class="up"><span>山形銀行 <span class="s">銀行</span></span><span class="r">+13.7%</span></li><li class="up"><span>キッコーマン <span class="s">食料品</span></span><span class="r">+13.4%</span></li></ul></div>
+      <div class="down"><h3>下がった（青）</h3><ul class="mv"><li class="down"><span>武蔵精密工業 <span class="s">自動車部品</span></span><span class="r">−40.4%</span></li><li class="down"><span>フィックスターズ <span class="s">情報通信</span></span><span class="r">−39.1%</span></li><li class="down"><span>ANYCOLOR <span class="s">情報通信</span></span><span class="r">−22.7%</span></li><li class="down"><span>日本電波工業 <span class="s">電気機器</span></span><span class="r">−18.1%</span></li><li class="down"><span>ＳＷＣＣ <span class="s">非鉄金属</span></span><span class="r">−18.0%</span></li></ul></div>
+    </div>
+    <p class="sub" style="margin-top:16px;">半導体（東京エレクトロン）や内需（鉄道・食品）が買われる一方、決算や個別材料で急落した銘柄も。日本では株価が上がると<b>赤</b>、下がると<b>青</b>で表します。</p>
+  </section>
+
+  <section>
+    <p class="eyebrow">今週の学び</p>
+    <h2>ドルコスト平均法</h2>
+    <div class="learn"><p>毎月同じ金額で買い続けると、株価が高い月は少なく、安い月は多く買えて、平均の買値が自然にならされます。これがドルコスト平均法。値動きを読んで売買のタイミングを当てにいくより、金額を決めて淡々と続けるほうが、個人には失敗が少ないとされます。次号は「1株ずつ積み立てると、数年でどう育つか」を扱います。</p></div>
+  </section>
+
+  <section>
+    <p class="eyebrow">ウォッチ ・ 来月に向けて</p>
+    <h2>枠には届かないが気になる会社</h2>
+    <ul class="watch"><li><span class="nm">立川ブラインド工業</span><span class="tick">7989・金属製品</span> ― 総合4位。質・割安ともバランス良く、¥2,435と手が届く。来月の有力候補。</li><li><span class="nm">ＪＣＵ</span><span class="tick">4975・化学</span> ― 半導体メッキ薬品。営業利益率41%で質は全社トップ級（98点）。ただPBRが高く割安は14点、1株¥6,960。</li><li><span class="nm">エンプラス</span><span class="tick">6961・電気機器</span> ― 質87・勢い98と高いが割安33。値がやや高め（¥11,920）。</li></ul>
+  </section>
+</div></details>
+</section>
+
+  <footer>
+    株ノート（kabu-note）は宍戸さん個人の学びと積立の記録です。掲載する銘柄はルールにもとづく機械的な候補であり、投資助言ではありません。売買の判断・実行はすべてご自身で。データ出典：J-Quants（株価は無料プランのため約12週間遅延）。数値は基準日時点のもので、将来を保証しません。
+  </footer>
+
+</div>

@@ -1,0 +1,25 @@
+name: notify-published
+# 株ノートの新しい号が公開（index.html が更新）されたら、ntfy でスマホに通知する。
+# クラウドが公開push→このActionが起動→ntfyへ1通。Macは関与しない。
+on:
+  push:
+    branches: [main]
+    paths:
+      - index.html
+
+jobs:
+  ntfy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send ntfy push
+        # コミットメッセージは env 経由で渡す（シェルへの直接展開＝インジェクションを避ける）
+        env:
+          MSG: ${{ github.event.head_commit.message }}
+          TOPIC: ${{ secrets.NTFY_TOPIC }}
+        run: |
+          curl -sS \
+            -H "Title: kabu-note" \
+            -H "Click: https://shishidosoichiro.github.io/kabu-note-web/" \
+            -H "Tags: chart_with_upwards_trend" \
+            -d "${MSG} を公開しました。タップで開きます。" \
+            "https://ntfy.sh/${TOPIC}"
